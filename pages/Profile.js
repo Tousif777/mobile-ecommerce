@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import { UserContext } from "../state/user";
 
 const Profile = () => {
-  const { logout } = useContext(UserContext);
+  const { logout, user } = useContext(UserContext);
   return (
     <View
       style={{
@@ -22,7 +22,7 @@ const Profile = () => {
         SS
       </Avatar>
       <Text fontSize="2xl" bold mt="1.5">
-        Raz
+        {user.email}
       </Text>
       <View flexDirection="row" justifyContent="space-around">
         <Box bg="white" p="2" borderRadius="lg" m="5" p="5">
@@ -32,14 +32,7 @@ const Profile = () => {
           <Text bold>Cart Items : 2</Text>
         </Box>
       </View>
-      <Button
-        p="4"
-        px="6"
-        colorScheme="red"
-        onPress={() => {
-          logout();
-        }}
-      >
+      <Button p="4" px="6" colorScheme="red" onPress={() => logout()}>
         Log out
       </Button>
     </View>

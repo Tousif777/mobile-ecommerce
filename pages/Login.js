@@ -1,29 +1,22 @@
-import { Center, Heading, Button, View, Text } from "native-base";
 import React, { useContext } from "react";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { UserContext } from "../state/user";
+import Signin from "./Signin";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import Signup from "./Signup";
 
-const googleIcon = (
-  <MaterialCommunityIcons name="google" size={24} color={"white"} />
-);
 const Login = () => {
   const { login } = useContext(UserContext);
+  const Stack = createNativeStackNavigator();
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
+    <Stack.Navigator
+      initialRouteName="Signin"
+      screenOptions={{
+        headerShown: false,
       }}
     >
-      <Heading>Fake shop app</Heading>
-      <Button mt="10" bg="red.400" onPress={() => login()}>
-        <Center flexDirection="row" justifyContent="space-between">
-          {googleIcon}
-          <Text color="white">Login with Google</Text>
-        </Center>
-      </Button>
-    </View>
+      <Stack.Screen name="Signin" component={Signin} />
+      <Stack.Screen name="Signup" component={Signup} />
+    </Stack.Navigator>
   );
 };
 
