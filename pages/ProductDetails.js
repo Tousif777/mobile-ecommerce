@@ -12,7 +12,8 @@ import React, { useContext } from "react";
 import { UserContext } from "../state/user";
 
 const ProductDetails = ({ navigation, route }) => {
-  const { cart, addToCart, removeFromCart } = useContext(UserContext);
+  const { cart, addToCart, removeFromCart, isLoggedIn } =
+    useContext(UserContext);
   const { item } = route.params;
 
   return (
@@ -36,29 +37,33 @@ const ProductDetails = ({ navigation, route }) => {
         </Heading>
         <Text bold>Price: {item.price}</Text>
         <Text my={2}> {item.description}</Text>
-        {cart.find((cartItem) => cartItem.id === item.id) ? (
+        {isLoggedIn ? (
           <Button
-            onPress={() => removeFromCart(item)}
-            bg="red.400"
-            mt={4}
-            mb={4}
-            w="100%"
+            p="4"
+            px="6"
+            colorScheme={
+              cart.find((cartItem) => cartItem.id === item.id) ? "red" : "green"
+            }
+            onPress={() => {
+              if (cart.find((cartItem) => cartItem.id === item.id)) {
+                removeFromCart(item);
+              } else {
+                addToCart(item);
+              }
+            }}
           >
-            <Text color="white" bold>
-              Remove from Cart
-            </Text>
+            {cart.find((cartItem) => cartItem.id === item.id)
+              ? "Remove from cart"
+              : "Add to cart"}
           </Button>
         ) : (
           <Button
-            onPress={() => addToCart(item)}
-            bg="green.400"
-            mt={4}
-            mb={4}
-            w="100%"
+            p="4"
+            px="6"
+            colorScheme="red"
+            onPress={() => navigation.navigate("Login")}
           >
-            <Text color="white" bold>
-              Add to Cart
-            </Text>
+            Login to add to cart
           </Button>
         )}
       </Box>
