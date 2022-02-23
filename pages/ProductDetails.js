@@ -8,10 +8,13 @@ import {
   Text,
   View,
 } from "native-base";
-import React from "react";
+import React, { useContext } from "react";
+import { UserContext } from "../state/user";
 
 const ProductDetails = ({ navigation, route }) => {
+  const { cart, addToCart, removeFromCart } = useContext(UserContext);
   const { item } = route.params;
+
   return (
     <ScrollView>
       <Box m={3} mt={16} p={6}>
@@ -28,19 +31,36 @@ const ProductDetails = ({ navigation, route }) => {
             }}
           />
         </Center>
-        <Heading my={3}>{item.title}</Heading>
+        <Heading my={3}>
+          {item.title}-{item.id}
+        </Heading>
         <Text bold>Price: {item.price}</Text>
         <Text my={2}> {item.description}</Text>
-        <Button mt={4}>
-          <Text
-            color={"white"}
-            onPress={() => {
-              alert("Add to cart");
-            }}
+        {cart.find((cartItem) => cartItem.id === item.id) ? (
+          <Button
+            onPress={() => removeFromCart(item)}
+            bg="red.400"
+            mt={4}
+            mb={4}
+            w="100%"
           >
-            Add to Cart
-          </Text>
-        </Button>
+            <Text color="white" bold>
+              Remove from Cart
+            </Text>
+          </Button>
+        ) : (
+          <Button
+            onPress={() => addToCart(item)}
+            bg="green.400"
+            mt={4}
+            mb={4}
+            w="100%"
+          >
+            <Text color="white" bold>
+              Add to Cart
+            </Text>
+          </Button>
+        )}
       </Box>
     </ScrollView>
   );

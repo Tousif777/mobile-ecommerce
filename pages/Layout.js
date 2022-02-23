@@ -25,7 +25,7 @@ const Layout = () => {
             name="Feed"
             component={Homepage}
             options={{
-              tabBarLabel: "Homepage",
+              tabBarLabel: "Home",
               tabBarIcon: ({ color }) => (
                 <MaterialCommunityIcons name="home" color={color} size={26} />
               ),
