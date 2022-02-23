@@ -12,7 +12,11 @@ const Signin = ({ navigation }) => {
   });
 
   const onLogin = () => {
-    login(logindata.email, logindata.password);
+    try {
+      login(logindata.email, logindata.password);
+    } catch (error) {
+      alert(error);
+    }
   };
 
   return (

@@ -14,7 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Touchable } from "react-native";
 
-const Home = () => {
+const Home = ({ navigation }) => {
   const [searchlist, setSearchlist] = useState([]);
   const [products, setProducts] = useState([]);
   const [newitems, setNewitems] = useState([]);
@@ -50,7 +50,13 @@ const Home = () => {
           <FlatList
             data={searchlist}
             renderItem={({ item }) => (
-              <View>
+              <View
+                onTouchEnd={() => {
+                  navigation.navigate("ProductDetails", {
+                    item,
+                  });
+                }}
+              >
                 <Image
                   source={{
                     uri: item.image,
@@ -73,6 +79,11 @@ const Home = () => {
               showsHorizontalScrollIndicator={false}
               renderItem={({ item }) => (
                 <Box
+                  onTouchEnd={() => {
+                    navigation.navigate("ProductDetails", {
+                      item,
+                    });
+                  }}
                   shadow="2"
                   borderRadius="2xl"
                   bg="coolGray.200"
@@ -121,7 +132,9 @@ const Home = () => {
               renderItem={({ item }) => (
                 <Box
                   onTouchEnd={() => {
-                    alert(item.title);
+                    navigation.navigate("ProductDetails", {
+                      item,
+                    });
                   }}
                   shadow="2"
                   borderRadius="2xl"

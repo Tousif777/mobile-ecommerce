@@ -4,15 +4,15 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Cart from "./Cart";
-import Home from "./Home";
 import Login from "./Login";
 import Profile from "./Profile";
 import { UserContext } from "../state/user";
+import Homepage from "./Homepage";
 
 const Tab = createMaterialBottomTabNavigator();
 
 const Layout = () => {
-  const { isLoggedIn, user, login, logout } = useContext(UserContext);
+  const { isLoggedIn } = useContext(UserContext);
   return (
     <NativeBaseProvider>
       <NavigationContainer>
@@ -23,9 +23,9 @@ const Layout = () => {
         >
           <Tab.Screen
             name="Feed"
-            component={Home}
+            component={Homepage}
             options={{
-              tabBarLabel: "Home",
+              tabBarLabel: "Homepage",
               tabBarIcon: ({ color }) => (
                 <MaterialCommunityIcons name="home" color={color} size={26} />
               ),

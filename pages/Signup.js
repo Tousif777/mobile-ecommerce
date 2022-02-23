@@ -27,7 +27,7 @@ const Signup = ({ navigation }) => {
         justifyContent: "center",
       }}
     >
-      <Box p="10" shadow="3" w="96">
+      <Box p="10" shadow="3" w="80">
         <Heading mb={"10"}>Sign Up</Heading>
         <Input
           placeholder="Email"
@@ -60,11 +60,11 @@ const Signup = ({ navigation }) => {
         >
           <Text color="white">Sign Up</Text>
         </Button>
-      </Box>
 
-      <Button onPress={() => navigation.navigate("Signin")}>
-        <Text color="white">Back to sign in page</Text>
-      </Button>
+        <Button mt="12" onPress={() => navigation.navigate("Signin")}>
+          <Text color="white">Back to sign in page</Text>
+        </Button>
+      </Box>
     </SafeAreaView>
   );
 };
