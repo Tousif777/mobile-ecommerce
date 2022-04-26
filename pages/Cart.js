@@ -1,76 +1,90 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   Box,
   Heading,
-  ScrollView,
+  FlatList,
   Text,
-  Image,
   Button,
   View,
-  FlatList,
+  Row,
+  Image,
 } from "native-base";
 import { UserContext } from "../state/user";
+import db from "../firebaseconfig";
 
 const Cart = () => {
-  const { cart } = useContext(UserContext);
+  const { user } = useContext(UserContext);
+  const [cart, setCart] = useState([]);
+  useEffect(() => {
+    db.collection("cart")
+      .doc(user)
+      .collection("items")
+      .onSnapshot((snapshot) => {
+        const newCart = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setCart(newCart);
+      });
+  }, []);
+
+  const removeFromCart = (id) => {
+    db.collection("cart").doc(user).collection("items").doc(id).delete();
+  };
+
   return (
     <SafeAreaView>
-      <ScrollView>
-        <Heading mt="4" ml="4">
-          Cart Items
-        </Heading>
-        <FlatList
-          data={cart}
-          renderItem={({ item }) => (
+      <Text bold>Cart</Text>
+      <Text>{user}</Text>
+      <FlatList
+        data={cart}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <View>
             <Box
-              mt="10"
-              m="4"
+              bg="white"
+              p="2"
+              borderRadius="lg"
+              m="5"
+              p="5"
               flexDirection="row"
-              justifyContent="space-around"
-              alignItems="center"
+              justifyContent="space-between"
             >
               <View>
+                <Text>{item.name}</Text>
+                <Text>{item.price}</Text>
                 <Image
-                  alt="cart"
-                  borderRadius="2xl"
-                  h="12"
-                  w="10"
+                  style={{
+                    width: 100,
+                    height: 100,
+                    borderRadius: 10,
+                  }}
                   source={{ uri: item.image }}
                 />
-              </View>
-              <View>
-                <Text bold>{item.title.substring(0, 10)}</Text>
-                <Text bold>{item.price}</Text>
-              </View>
-              <View>
-                <Button>-</Button>
-              </View>
-              <View>
-                <Text>1</Text>
-              </View>
-              <View>
-                <Button>+</Button>
-              </View>
-              <View>
-                <Button bg="red.400">
-                  <Text color="white" bold>
-                    Remove
-                  </Text>
+
+                <Text> Quantity: {item.quantity}</Text>
+                <Button
+                  p="4"
+                  px="6"
+                  colorScheme="red"
+                  onPress={() => {
+                    removeFromCart(item.id);
+                  }}
+                >
+                  Remove
                 </Button>
               </View>
             </Box>
-          )}
-        />
-        <Box>
-          <Text mt={6} ml={6} bold>
-            Total:{" "}
-            {cart.reduce((acc, item) => {
-              return acc + item.price;
-            }, 0)}
-          </Text>
-        </Box>
-      </ScrollView>
+          </View>
+        )}
+      />
+      <Text>
+        Total:
+        {cart.reduce((acc, item) => {
+          return acc + item.price;
+        }, 0)}
+      </Text>
     </SafeAreaView>
   );
 };

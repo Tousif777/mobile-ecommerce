@@ -13,18 +13,22 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Touchable } from "react-native";
+import db from "../firebaseconfig";
 
 const Home = ({ navigation }) => {
   const [searchlist, setSearchlist] = useState([]);
   const [products, setProducts] = useState([]);
   const [newitems, setNewitems] = useState([]);
   useEffect(() => {
-    fetch("https://fakestoreapi.com/products")
-      .then((res) => res.json())
-      .then((data) => setProducts(data));
-    fetch("https://fakestoreapi.com/products?sort=desc")
-      .then((res) => res.json())
-      .then((data) => setNewitems(data));
+    db.collection("products")
+      .get()
+      .then((snapshot) => {
+        const newProducts = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setProducts(newProducts);
+      });
   }, []);
 
   return (
@@ -46,121 +50,68 @@ const Home = ({ navigation }) => {
             />
           }
         />
-        {searchlist.length > 0 ? (
+        <View>
+          <Center>
+            <Image
+              mt="5"
+              alt="item"
+              borderRadius="2xl"
+              w="95%"
+              h="100"
+              source={{
+                uri: "https://media.istockphoto.com/photos/demo-sign-cubes-picture-id615422436?k=20&m=615422436&s=612x612&w=0&h=m-VHyxKGp3qdXyi_O5C1oxghcmbAegmb34VaD9n6v7c=",
+              }}
+            />
+          </Center>
+
+          <Heading ml="6" m="3">
+            All Items
+          </Heading>
           <FlatList
-            data={searchlist}
+            mb="6"
+            data={products}
+            ml="4"
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
             renderItem={({ item }) => (
-              <View
+              <Box
                 onTouchEnd={() => {
                   navigation.navigate("ProductDetails", {
                     item,
                   });
                 }}
+                shadow="2"
+                borderRadius="2xl"
+                bg="coolGray.200"
+                mx="2.5"
+                h="56"
+                w="40"
               >
                 <Image
-                  source={{
-                    uri: item.image,
-                  }}
-                  style={{ width: "100%", height: 200 }}
+                  alt="item"
+                  borderTopRadius="2xl"
+                  w="100%"
+                  h="65%"
+                  source={{ uri: item.image }}
                 />
-                <Text>{item.name}</Text>
-              </View>
+                <View textAlign="center" p="3">
+                  <Text fontSize="14" bold>
+                    {item.name.charAt(0).toUpperCase() + item.name.slice(1)}
+                  </Text>
+                  <Text fontSize="14" color="gray.600">
+                    {
+                      //tille will be 10 charachters
+                      item.name.length > 20
+                        ? item.title.substring(0, 10) + "..."
+                        : item.title
+                    }
+                  </Text>
+                  <Text fontSize="10">Price: {item.price}</Text>
+                </View>
+              </Box>
             )}
           />
-        ) : (
-          <View>
-            <Box m={3} ml={6}>
-              <Heading>New Items</Heading>
-            </Box>
-            <FlatList
-              data={newitems}
-              ml="4"
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-              renderItem={({ item }) => (
-                <Box
-                  onTouchEnd={() => {
-                    navigation.navigate("ProductDetails", {
-                      item,
-                    });
-                  }}
-                  shadow="2"
-                  borderRadius="2xl"
-                  bg="coolGray.200"
-                  mx="2.5"
-                  h="56"
-                  w="40"
-                >
-                  <Image
-                    alt="item"
-                    borderTopRadius="2xl"
-                    w="100%"
-                    h="65%"
-                    source={{ uri: item.image }}
-                  />
-                  <View textAlign="center" p="3">
-                    <Text fontSize="12" bold>
-                      {item.title.substring(0, 30)}
-                    </Text>
-                    <Text fontSize="12">Price: {item.price}</Text>
-                  </View>
-                </Box>
-              )}
-            />
-            <Center>
-              <Image
-                mt="5"
-                alt="item"
-                borderRadius="2xl"
-                w="95%"
-                h="100"
-                source={{
-                  uri: "https://media.istockphoto.com/photos/demo-sign-cubes-picture-id615422436?k=20&m=615422436&s=612x612&w=0&h=m-VHyxKGp3qdXyi_O5C1oxghcmbAegmb34VaD9n6v7c=",
-                }}
-              />
-            </Center>
-
-            <Heading ml="6" m="3">
-              Popular Items
-            </Heading>
-            <FlatList
-              mb="6"
-              data={products}
-              ml="4"
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-              renderItem={({ item }) => (
-                <Box
-                  onTouchEnd={() => {
-                    navigation.navigate("ProductDetails", {
-                      item,
-                    });
-                  }}
-                  shadow="2"
-                  borderRadius="2xl"
-                  bg="coolGray.200"
-                  mx="2.5"
-                  h="56"
-                  w="40"
-                >
-                  <Image
-                    alt="item"
-                    borderTopRadius="2xl"
-                    w="100%"
-                    h="65%"
-                    source={{ uri: item.image }}
-                  />
-                  <View textAlign="center" p="3">
-                    <Text fontSize="12" bold>
-                      Name: {item.title.substring(0, 30)}
-                    </Text>
-                    <Text fontSize="10">Price: {item.price}</Text>
-                  </View>
-                </Box>
-              )}
-            />
-          </View>
-        )}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

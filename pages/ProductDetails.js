@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   Center,
@@ -8,13 +9,33 @@ import {
   Text,
   View,
 } from "native-base";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { UserContext } from "../state/user";
+import db from "../firebaseconfig";
 
 const ProductDetails = ({ navigation, route }) => {
-  const { cart, addToCart, removeFromCart, isLoggedIn } =
-    useContext(UserContext);
   const { item } = route.params;
+  const [quantity, setQuantity] = useState(1);
+  const { user } = useContext(UserContext);
+
+  const addToCart = () => {
+    db.collection("cart")
+      .doc(user)
+      .collection("items")
+      .add({
+        product: item.id,
+        quantity: quantity,
+        image: item.image,
+        price: item.price * quantity,
+        name: item.name,
+      });
+    db.collection("products")
+      .doc(item.id)
+      .update({
+        quantity: item.quantity - quantity,
+      });
+    alert("Added to cart");
+  };
 
   return (
     <ScrollView>
@@ -32,39 +53,43 @@ const ProductDetails = ({ navigation, route }) => {
             }}
           />
         </Center>
-        <Heading my={3}>
-          {item.title}-{item.id}
-        </Heading>
+        <Heading my={3}>{item.name}</Heading>
         <Text bold>Price: {item.price}</Text>
-        <Text my={2}> {item.description}</Text>
-        {isLoggedIn ? (
+        <Text my={2}> {item.title}</Text>
+        <View
+          mt={4}
+          mb={4}
+          flexDirection="row"
+          justifyContent={"space-between"}
+        >
           <Button
-            p="4"
-            px="6"
-            colorScheme={
-              cart.find((cartItem) => cartItem.id === item.id) ? "red" : "green"
-            }
+            disabled={item.quantity - quantity < 0 ? true : false}
             onPress={() => {
-              if (cart.find((cartItem) => cartItem.id === item.id)) {
-                removeFromCart(item);
-              } else {
-                addToCart(item);
-              }
+              setQuantity(quantity + 1);
             }}
           >
-            {cart.find((cartItem) => cartItem.id === item.id)
-              ? "Remove from cart"
-              : "Add to cart"}
+            +
+          </Button>
+          <Text>{quantity}</Text>
+          <Button
+            disabled={quantity === 1}
+            onPress={() => {
+              setQuantity(quantity - 1);
+            }}
+          >
+            -
+          </Button>
+        </View>
+        {item.quantity > 0 ? (
+          <Button
+            onPress={() => {
+              addToCart();
+            }}
+          >
+            Add to Cart
           </Button>
         ) : (
-          <Button
-            p="4"
-            px="6"
-            colorScheme="red"
-            onPress={() => navigation.navigate("Login")}
-          >
-            Login to add to cart
-          </Button>
+          <Button disabled>Out of Stock</Button>
         )}
       </Box>
     </ScrollView>

@@ -6,6 +6,7 @@ import firebase from "firebase";
 const Signup = ({ navigation }) => {
   const auth = firebase.auth();
   const [signupdata, setSignupdata] = useState({
+    name: "",
     email: "",
     password: "",
     confirmpassword: "",
@@ -13,7 +14,11 @@ const Signup = ({ navigation }) => {
 
   const onLogin = () => {
     auth
-      .createUserWithEmailAndPassword(signupdata.email, signupdata.password)
+      .createUserWithEmailAndPassword(
+        signupdata.email,
+        signupdata.password,
+        signupdata.name
+      )
       .then((res) => {
         navigation.navigate("Signin");
       });
@@ -29,6 +34,7 @@ const Signup = ({ navigation }) => {
     >
       <Box p="10" shadow="3" w="80">
         <Heading mb={"10"}>Sign Up</Heading>
+
         <Input
           placeholder="Email"
           onChange={(e) =>
